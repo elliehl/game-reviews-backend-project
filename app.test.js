@@ -39,3 +39,24 @@ describe("GET /api/categories", () => {
       });
   });
 });
+
+describe("GET /api/reviews/:review_id", () => {
+  it("Responds with a 200 status and a single review object, matching the input id", () => {
+    return request(app)
+      .get("/api/reviews/3")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.review).toEqual({
+          title: "Ultimate Werewolf",
+          designer: "Akihisa Okui",
+          owner: "bainesface",
+          review_img_url:
+            "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png",
+          review_body: "We couldn't find the werewolf!",
+          category: "social deduction",
+          created_at: new Date(1610964101251),
+          votes: 5,
+        });
+      });
+  });
+});
