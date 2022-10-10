@@ -7,7 +7,7 @@ app.get("/api/categories", getCategories);
 app.get("/api/reviews/:review_id", getReviewById);
 
 app.use((err, req, res, next) => {
-  if (err.code === 400) {
+  if (err.code === "22P02") {
     res.status(400).send({ message: "Bad request" });
   } else {
     next(err);

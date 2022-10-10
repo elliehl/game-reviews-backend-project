@@ -53,10 +53,28 @@ describe("GET /api/reviews/:review_id", () => {
           review_img_url:
             "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png",
           review_body: "We couldn't find the werewolf!",
+          review_id: 3,
           category: "social deduction",
-          created_at: new Date(1610964101251),
+          created_at: "2021-01-18T10:01:41.251Z",
           votes: 5,
         });
+      });
+  });
+  // this returns a 200 but should return a 404
+  it("Responds with a 404 status and an error message when a non-existent review_id is requested", () => {
+    return request(app)
+      .get("/api/reviews/10000000")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.message).toBe("Path not found");
+      });
+  });
+  it("Responds with a 400 status and an error message when an incorrect data type is input", () => {
+    return request(app)
+      .get("/api/reviews/name")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.message).toBe("Bad request");
       });
   });
 });
