@@ -5,6 +5,7 @@ const { getCategories, getReviewById } = require("./controller");
 
 app.get("/api/categories", getCategories);
 app.get("/api/reviews/:review_id", getReviewById);
+app.get("/api/users");
 
 app.use((err, req, res, next) => {
   if (err.code === "22P02") {

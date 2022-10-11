@@ -15,4 +15,8 @@ const fetchReviewById = (review_id) => {
     });
 };
 
-module.exports = { fetchCategories, fetchReviewById };
+const fetchUsers = () => {
+  return db.query("SELECT * FROM users").then(({ rows }) => rows);
+};
+
+module.exports = { fetchCategories, fetchReviewById, fetchUsers };
