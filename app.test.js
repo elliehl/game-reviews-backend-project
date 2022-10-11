@@ -170,4 +170,3 @@ describe("PATCH /api/reviews/:review_id", () => {
       });
   });
 });
-// need to do tests for if inc_votes' value is a string (400), not a number, as well as if there is no inc_votes key on the object at all (200) - try to patch with an empty object to see what happens
