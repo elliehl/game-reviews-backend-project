@@ -1,8 +1,4 @@
-const db = require("./db/connection");
-
-const fetchCategories = () => {
-  return db.query("SELECT * FROM categories").then(({ rows }) => rows);
-};
+const db = require("../db/connection");
 
 const fetchReviewById = (review_id) => {
   return db
@@ -15,4 +11,4 @@ const fetchReviewById = (review_id) => {
     });
 };
 
-module.exports = { fetchCategories, fetchReviewById };
+module.exports = { fetchReviewById };
