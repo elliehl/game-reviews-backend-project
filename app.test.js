@@ -60,13 +60,12 @@ describe("GET /api/reviews/:review_id", () => {
         });
       });
   });
-  // this returns a 200 but should return a 404
   it("Responds with a 404 status and an error message when a non-existent review_id is requested", () => {
     return request(app)
       .get("/api/reviews/10000000")
       .expect(404)
       .then(({ body }) => {
-        expect(body.message).toBe("Path not found");
+        expect(body.message).toBe("ID not found");
       });
   });
   it("Responds with a 400 status and an error message when an incorrect data type is input", () => {
