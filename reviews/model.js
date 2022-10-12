@@ -18,10 +18,6 @@ const fetchReviewById = (review_id) => {
       return rows[0];
     });
 };
-//
-
-// tried RETURNING *, COUNT(comment_id), SELECT reviews.*, removing AS comment_count, WHERE reviews.review_id = $1
-// using the old query still works so the tests aren't the problem
 
 const patchReview = (incomingVotes = 0, review_id) => {
   // incomingVotes is req.body.inc_votes (20 in this case)
