@@ -46,18 +46,32 @@ describe("GET /api/reviews/:review_id", () => {
       .get("/api/reviews/3")
       .expect(200)
       .then(({ body }) => {
-        expect(body.review).toEqual({
-          title: "Ultimate Werewolf",
-          designer: "Akihisa Okui",
-          owner: "bainesface",
-          review_img_url:
-            "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png",
-          review_body: "We couldn't find the werewolf!",
-          review_id: 3,
-          category: "social deduction",
-          created_at: "2021-01-18T10:01:41.251Z",
-          votes: 5,
-        });
+        expect(body.review).toEqual(
+          expect.objectContaining({
+            title: "Ultimate Werewolf",
+            designer: "Akihisa Okui",
+            owner: "bainesface",
+            review_img_url:
+              "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png",
+            review_body: "We couldn't find the werewolf!",
+            review_id: 3,
+            category: "social deduction",
+            created_at: "2021-01-18T10:01:41.251Z",
+            votes: 5,
+          })
+        );
+      });
+  });
+  it("Responds with a 200 status and contains a count of the number of comments for each review", () => {
+    return request(app)
+      .get("/api/reviews/3")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.review).toEqual(
+          expect.objectContaining({
+            comment_count: 3,
+          })
+        );
       });
   });
   it("Responds with a 404 status and an error message when a non-existent review_id is requested", () => {
