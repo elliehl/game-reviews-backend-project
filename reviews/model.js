@@ -2,7 +2,15 @@ const db = require("../db/connection");
 
 const fetchReviewById = (review_id) => {
   return db
-    .query("SELECT * FROM reviews WHERE review_id = $1;", [review_id])
+    .query(
+      `SELECT reviews.*, COUNT(comments.comment_id) ::INT AS comment_count
+       FROM reviews 
+       LEFT JOIN comments
+       ON comments.review_id = reviews.review_id
+       WHERE reviews.review_id = $1 
+       GROUP BY reviews.review_id;`,
+      [review_id]
+    )
     .then(({ rows }) => {
       if (rows.length === 0) {
         return Promise.reject({ status: 404, message: "ID not found" });
@@ -10,6 +18,10 @@ const fetchReviewById = (review_id) => {
       return rows[0];
     });
 };
+//
+
+// tried RETURNING *, COUNT(comment_id), SELECT reviews.*, removing AS comment_count, WHERE reviews.review_id = $1
+// using the old query still works so the tests aren't the problem
 
 const patchReview = (incomingVotes = 0, review_id) => {
   // incomingVotes is req.body.inc_votes (20 in this case)
