@@ -262,3 +262,61 @@ describe("GET /api/reviews", () => {
       });
   });
 });
+
+describe.only("GET /api/reviews/:review_id/comments", () => {
+  it("Responds with a 200 status and an array of objects of all of the comments for the input review_id", () => {
+    return request(app)
+      .get("/api/reviews/3/comments")
+      .expect(200)
+      .then(({ body }) => {
+        const { comments } = body;
+        expect(Array.isArray(comments)).toBe(true);
+        expect(comments.length).toBe(3);
+        comments.forEach((comment) => {
+          expect(comment).toEqual(
+            expect.objectContaining({
+              review_id: 3,
+              body: expect.any(String),
+              votes: expect.any(Number),
+              created_at: expect.any(String),
+              author: expect.any(String),
+              comment_id: expect.any(Number),
+            })
+          );
+        });
+      });
+  });
+  it("Is sorted by created_at in descending order, starting with the most recent comment", () => {
+    return request(app)
+      .get("/api/reviews/3/comments")
+      .expect(200)
+      .then(({ body }) => {
+        const { comments } = body;
+        expect(comments).toBeSortedBy("created_at", { descending: true });
+      });
+  });
+  it("Returns a 404 status error when given a review_id that doesn't exist", () => {
+    return request(app)
+      .get("/api/reviews/10000/comments")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.message).toBe("ID not found");
+      });
+  });
+  it("Returns a 200 status and an empty array when given a valid review_id that doesn't have any comments", () => {
+    return request(app)
+      .get("/api/reviews/1/comments")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.comments).toEqual([]);
+      });
+  });
+  it("Responds with a 400 status and an error message when an incorrect data type is input for review_id", () => {
+    return request(app)
+      .get("/api/reviews/three/comments")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.message).toBe("Bad request");
+      });
+  });
+});

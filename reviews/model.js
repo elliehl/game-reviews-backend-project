@@ -75,4 +75,23 @@ const fetchReviews = (sort_by = "created_at", order = "desc", category) => {
   });
 };
 
-module.exports = { fetchReviewById, patchReview, fetchReviews };
+const fetchCommentsByReviewId = (
+  review_id,
+  sort_by = "created_at",
+  order = "desc"
+) => {
+  return db
+    .query(
+      `SELECT * FROM comments WHERE review_id = $1
+       ORDER BY ${sort_by} ${order};`,
+      [review_id]
+    )
+    .then(({ rows }) => rows);
+};
+
+module.exports = {
+  fetchReviewById,
+  patchReview,
+  fetchReviews,
+  fetchCommentsByReviewId,
+};

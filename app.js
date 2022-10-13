@@ -6,6 +6,7 @@ const {
   getReviewById,
   updateReview,
   getReviews,
+  getCommentsByReviewId,
 } = require("./reviews/controller");
 const { getUsers } = require("./users/controller");
 
@@ -14,6 +15,7 @@ app.get("/api/reviews/:review_id", getReviewById);
 app.get("/api/users", getUsers);
 app.patch("/api/reviews/:review_id", updateReview);
 app.get("/api/reviews", getReviews);
+app.get("/api/reviews/:review_id/comments", getCommentsByReviewId);
 
 app.all("/*", (req, res) => {
   res.status(404).send({ message: "Path not found" });
