@@ -7,6 +7,7 @@ const {
   updateReview,
   getReviews,
   getCommentsByReviewId,
+  addComment,
 } = require("./reviews/controller");
 const { getUsers } = require("./users/controller");
 
@@ -16,6 +17,7 @@ app.get("/api/users", getUsers);
 app.patch("/api/reviews/:review_id", updateReview);
 app.get("/api/reviews", getReviews);
 app.get("/api/reviews/:review_id/comments", getCommentsByReviewId);
+app.post("/api/reviews/:review_id/comments", addComment);
 
 app.all("/*", (req, res) => {
   res.status(404).send({ message: "Path not found" });
@@ -32,6 +34,10 @@ app.use((err, req, res, next) => {
 app.use((err, req, res, next) => {
   if (err.code === "22P02") {
     res.status(400).send({ message: "Bad request" });
+  } else if (err.code === "23502") {
+    res.status(400).send({ message: "Missing required field" });
+  } else if (err.code === "23503") {
+    res.status(404).send({ message: "Invalid username" });
   } else {
     next(err);
   }
