@@ -42,4 +42,37 @@ const patchReview = (incomingVotes = 0, review_id) => {
     });
 };
 
-module.exports = { fetchReviewById, patchReview };
+const fetchReviews = (sort_by = "created_at", order = "desc", category) => {
+  let queryString = `
+  SELECT reviews.owner, reviews.title, reviews.review_id, reviews.category, reviews.review_img_url, reviews.created_at, reviews.votes, reviews.designer, COUNT(comments.comment_id) ::INT AS comment_count
+  FROM reviews 
+  LEFT JOIN comments ON comments.review_id = reviews.review_id`;
+  const queryValues = [];
+
+  if (category !== undefined) {
+    queryString += ` WHERE reviews.category = $1`;
+    queryValues.push(category);
+  }
+
+  queryString += ` 
+  GROUP BY reviews.review_id
+  ORDER BY ${sort_by} ${order};`;
+
+  return db.query(queryString, queryValues).then(({ rows }) => {
+    if (rows.length === 0) {
+      return db
+        .query(`SELECT * FROM categories WHERE slug = $1`, [category])
+        .then(({ rows }) => {
+          if (rows.length === 0) {
+            return Promise.reject({
+              status: 404,
+              message: "This category does not exist",
+            });
+          }
+        });
+    }
+    return rows;
+  });
+};
+
+module.exports = { fetchReviewById, patchReview, fetchReviews };

@@ -3,6 +3,8 @@ const app = require("./app");
 const db = require("./db/connection");
 const seed = require("./db/seeds/seed");
 const data = require("./db/data/test-data/index");
+const { fetchReviews } = require("./reviews/model");
+require("jest-sorted");
 
 beforeEach(() => seed(data));
 
@@ -181,6 +183,82 @@ describe("PATCH /api/reviews/:review_id", () => {
           created_at: "2021-01-18T10:01:41.251Z",
           votes: 5,
         });
+      });
+  });
+});
+
+describe("GET /api/reviews", () => {
+  it("Responds with a 200 status and an array of review objects, containing owner, title, review_id, category, review_img_url, created_at, votes, designer and comment_count properties", () => {
+    return request(app)
+      .get("/api/reviews")
+      .expect(200)
+      .then(({ body }) => {
+        const { reviews } = body;
+        expect(Array.isArray(reviews)).toBe(true);
+        expect(reviews.length).toBe(13);
+        reviews.forEach((review) => {
+          expect(review).toEqual(
+            expect.objectContaining({
+              owner: expect.any(String),
+              title: expect.any(String),
+              review_id: expect.any(Number),
+              category: expect.any(String),
+              review_img_url: expect.any(String),
+              created_at: expect.any(String),
+              votes: expect.any(Number),
+              designer: expect.any(String),
+              comment_count: expect.any(Number),
+            })
+          );
+        });
+      });
+  });
+  it("Is sorted by created_at in descending order, starting with the most recent review", () => {
+    return request(app)
+      .get("/api/reviews")
+      .expect(200)
+      .then(({ body }) => {
+        const { reviews } = body;
+        expect(reviews).toBeSortedBy("created_at", { descending: true });
+      });
+  });
+  it("Is sorted by votes in ascending order, starting with the lowest number of votes", () => {
+    return request(app)
+      .get("/api/reviews?order=asc&sort_by=votes")
+      .expect(200)
+      .then(({ body }) => {
+        const { reviews } = body;
+        expect(reviews).toBeSortedBy("votes", { descending: false });
+      });
+  });
+  it("Can be filtered by category, showing only the reviews of the input category", () => {
+    return request(app)
+      .get("/api/reviews?category=euro+game")
+      .expect(200)
+      .then(({ body }) => {
+        const { reviews } = body;
+        expect(reviews).toEqual([
+          {
+            title: "Agricola",
+            designer: "Uwe Rosenberg",
+            owner: "mallionaire",
+            review_img_url:
+              "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png",
+            review_id: 1,
+            category: "euro game",
+            created_at: "2021-01-18T10:00:20.514Z",
+            votes: 1,
+            comment_count: 0,
+          },
+        ]);
+      });
+  });
+  it("Returns an error when given an category that doesn't exist", () => {
+    return request(app)
+      .get("/api/reviews?category=legacy")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.message).toBe("This category does not exist");
       });
   });
 });
