@@ -263,7 +263,7 @@ describe("GET /api/reviews", () => {
   });
 });
 
-describe.only("GET /api/reviews/:review_id/comments", () => {
+describe("GET /api/reviews/:review_id/comments", () => {
   it("Responds with a 200 status and an array of objects of all of the comments for the input review_id", () => {
     return request(app)
       .get("/api/reviews/3/comments")
@@ -317,6 +317,72 @@ describe.only("GET /api/reviews/:review_id/comments", () => {
       .expect(400)
       .then(({ body }) => {
         expect(body.message).toBe("Bad request");
+      });
+  });
+});
+
+describe("POST /api/reviews/:review_id/comments", () => {
+  const addedComment = {
+    username: "dav3rid",
+    body: "One of my favourite games!",
+  };
+  it("Responds with a 201 status and the new comment object", () => {
+    return request(app)
+      .post("/api/reviews/3/comments")
+      .send(addedComment)
+      .expect(201)
+      .then(({ body }) => {
+        expect(body.comment).toEqual(
+          expect.objectContaining({
+            review_id: 3,
+            author: "dav3rid",
+            body: "One of my favourite games!",
+            comment_id: expect.any(Number),
+            created_at: expect.any(String),
+            votes: expect.any(Number),
+          })
+        );
+      });
+  });
+  it("Returns a 404 status error when given a review_id that doesn't exist", () => {
+    return request(app)
+      .post("/api/reviews/10000/comments")
+      .send(addedComment)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.message).toBe("ID not found");
+      });
+  });
+  it("Responds with a 400 status and an error message when an incorrect data type is input for review_id", () => {
+    return request(app)
+      .post("/api/reviews/three/comments")
+      .send(addedComment)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.message).toBe("Bad request");
+      });
+  });
+  it("Responds with a 400 status and an error message when an empty object is passed as an added comment", () => {
+    const addedComment = {};
+    return request(app)
+      .post("/api/reviews/3/comments")
+      .send(addedComment)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.message).toBe("Missing required field");
+      });
+  });
+  it("Responds with a 404 status and an error message when the input is an invalid username", () => {
+    const addedComment = {
+      username: "werewolfstan",
+      body: "One of my favourite games!",
+    };
+    return request(app)
+      .post("/api/reviews/3/comments")
+      .send(addedComment)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.message).toBe("Invalid username");
       });
   });
 });

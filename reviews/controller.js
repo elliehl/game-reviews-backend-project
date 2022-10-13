@@ -3,6 +3,7 @@ const {
   patchReview,
   fetchReviews,
   fetchCommentsByReviewId,
+  postComment,
 } = require("./model");
 
 const getReviewById = (req, res, next) => {
@@ -28,18 +29,26 @@ const getReviews = (req, res, next) => {
     .then((reviews) => {
       res.status(200).send({ reviews });
     })
-    .catch((err) => next(err));
+    .catch(next);
 };
 
 const getCommentsByReviewId = (req, res, next) => {
   const { review_id } = req.params;
   fetchReviewById(review_id)
-    .then(() => {
-      fetchCommentsByReviewId(review_id).then((comments) =>
-        res.status(200).send({ comments })
-      );
+    .then(() => fetchCommentsByReviewId(review_id))
+    .then((comments) => res.status(200).send({ comments }))
+    .catch(next);
+};
+
+const addComment = (req, res, next) => {
+  const newComment = req.body;
+  const { review_id } = req.params;
+  fetchReviewById(review_id)
+    .then(() => postComment(newComment, review_id))
+    .then((comment) => {
+      res.status(201).send({ comment });
     })
-    .catch((err) => next(err));
+    .catch(next);
 };
 
 module.exports = {
@@ -47,4 +56,5 @@ module.exports = {
   updateReview,
   getReviews,
   getCommentsByReviewId,
+  addComment,
 };
