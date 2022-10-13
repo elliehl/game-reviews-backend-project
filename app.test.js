@@ -311,4 +311,12 @@ describe.only("GET /api/reviews/:review_id/comments", () => {
         expect(body.comments).toEqual([]);
       });
   });
+  it("Responds with a 400 status and an error message when an incorrect data type is input for review_id", () => {
+    return request(app)
+      .get("/api/reviews/three/comments")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.message).toBe("Bad request");
+      });
+  });
 });
