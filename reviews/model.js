@@ -48,10 +48,36 @@ const fetchReviews = (sort_by = "created_at", order = "desc", category) => {
   FROM reviews 
   LEFT JOIN comments ON comments.review_id = reviews.review_id`;
   const queryValues = [];
+  const sortOptions = [
+    "owner",
+    "title",
+    "review_id",
+    "category",
+    "review_img_url",
+    "created_at",
+    "votes",
+    "designer",
+    "comment_count",
+  ];
+  const orderOptions = ["desc", "asc"];
 
   if (category !== undefined) {
     queryString += ` WHERE reviews.category = $1`;
     queryValues.push(category);
+  }
+
+  if (!sortOptions.includes(sort_by)) {
+    return Promise.reject({
+      status: 404,
+      message: "Cannot sort by this input",
+    });
+  }
+
+  if (!orderOptions.includes(order)) {
+    return Promise.reject({
+      status: 404,
+      message: "Can only order by asc or desc",
+    });
   }
 
   queryString += ` 
