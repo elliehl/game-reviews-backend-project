@@ -402,3 +402,21 @@ describe("POST /api/reviews/:review_id/comments", () => {
       });
   });
 });
+
+describe("DELETE /api/comments/:comment_id", () => {
+  it("Returns a 204 status and deletes the comment that corresponds with the input comment_id", () => {
+    return request(app).delete("/api/comments/1").expect(204);
+  });
+  it("Returns a 404 status when requesting to delete a comment that doesn't exist", () => {
+    return request(app)
+      .delete("/api/comments/1000")
+      .expect(404)
+      .then(({ body }) => expect(body.message).toBe("Not a valid comment"));
+  });
+  it("Returns a 400 status when the input is an invalid data type for a comment_id", () => {
+    return request(app)
+      .delete("/api/comments/one")
+      .expect(400)
+      .then(({ body }) => expect(body.message).toBe("Bad request"));
+  });
+});
