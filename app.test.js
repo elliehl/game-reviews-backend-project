@@ -222,7 +222,7 @@ describe("GET /api/reviews", () => {
         expect(reviews).toBeSortedBy("created_at", { descending: true });
       });
   });
-  it("Is sorted by votes in ascending order, starting with the lowest number of votes", () => {
+  it("Is sorted by votes in ascending order, starting with the lowest number of votes, when queried with these arguments", () => {
     return request(app)
       .get("/api/reviews?order=asc&sort_by=votes")
       .expect(200)
@@ -253,12 +253,28 @@ describe("GET /api/reviews", () => {
         ]);
       });
   });
-  it("Returns an error when given an category that doesn't exist", () => {
+  it("Returns a 404 status error when given a category that doesn't exist", () => {
     return request(app)
       .get("/api/reviews?category=legacy")
       .expect(404)
       .then(({ body }) => {
         expect(body.message).toBe("This category does not exist");
+      });
+  });
+  it("Returns a 400 status error when attempting to sort by a key that doesn't exist", () => {
+    return request(app)
+      .get("/api/reviews?sort_by=rating")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.message).toBe("Cannot sort by this input");
+      });
+  });
+  it("Returns a 400 status error when attempting to order by anything other than asc or desc", () => {
+    return request(app)
+      .get("/api/reviews?order=highest")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.message).toBe("Can only order by asc or desc");
       });
   });
 });
