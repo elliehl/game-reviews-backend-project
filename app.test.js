@@ -261,18 +261,18 @@ describe("GET /api/reviews", () => {
         expect(body.message).toBe("This category does not exist");
       });
   });
-  it("Returns a 404 status error when attempting to sort by a key that doesn't exist", () => {
+  it("Returns a 400 status error when attempting to sort by a key that doesn't exist", () => {
     return request(app)
       .get("/api/reviews?sort_by=rating")
-      .expect(404)
+      .expect(400)
       .then(({ body }) => {
         expect(body.message).toBe("Cannot sort by this input");
       });
   });
-  it("Returns a 404 status error when attempting to order by anything other than asc or desc", () => {
+  it("Returns a 400 status error when attempting to order by anything other than asc or desc", () => {
     return request(app)
       .get("/api/reviews?order=highest")
-      .expect(404)
+      .expect(400)
       .then(({ body }) => {
         expect(body.message).toBe("Can only order by asc or desc");
       });

@@ -59,7 +59,7 @@ const fetchReviews = (sort_by = "created_at", order = "desc", category) => {
     "designer",
     "comment_count",
   ];
-  const orderOptions = ["desc", "asc"];
+  const orderOptions = ["desc", "asc", "DESC", "ASC"];
 
   if (category !== undefined) {
     queryString += ` WHERE reviews.category = $1`;
@@ -68,14 +68,14 @@ const fetchReviews = (sort_by = "created_at", order = "desc", category) => {
 
   if (!sortOptions.includes(sort_by)) {
     return Promise.reject({
-      status: 404,
+      status: 400,
       message: "Cannot sort by this input",
     });
   }
 
   if (!orderOptions.includes(order)) {
     return Promise.reject({
-      status: 404,
+      status: 400,
       message: "Can only order by asc or desc",
     });
   }
