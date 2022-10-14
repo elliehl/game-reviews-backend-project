@@ -100,6 +100,19 @@ const postComment = (newComment, review_id) => {
     .then(({ rows }) => rows[0]);
 };
 
+const deleteComment = (comment_id) => {
+  return db
+    .query(`DELETE FROM comments WHERE comment_id = $1`, [comment_id])
+    .then(({ rows }) => {
+      if (rows.length === 0) {
+        return Promise.reject({
+          status: 404,
+          message: "Not a valid comment",
+        });
+      }
+    });
+};
+
 module.exports = {
   fetchReviewById,
   patchReview,
