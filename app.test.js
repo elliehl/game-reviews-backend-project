@@ -420,3 +420,19 @@ describe("DELETE /api/comments/:comment_id", () => {
       .then(({ body }) => expect(body.message).toBe("Bad request"));
   });
 });
+
+describe.only("GET /api", () => {
+  it("Responds with a 200 status and the endpoints object", () => {
+    return request(app)
+      .get("/api")
+      .expect(200)
+      .then(({ body }) => {
+        console.log(body);
+        expect(body).toEqual(
+          expect.objectContaining({
+            endpoints: expect.any(Object),
+          })
+        );
+      });
+  });
+});

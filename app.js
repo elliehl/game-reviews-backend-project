@@ -2,6 +2,7 @@ const express = require("express");
 const app = express();
 app.use(express.json());
 const { getCategories } = require("./categories/controller");
+const { getEndpoints } = require("./controller");
 const {
   getReviewById,
   updateReview,
@@ -20,6 +21,7 @@ app.get("/api/reviews", getReviews);
 app.get("/api/reviews/:review_id/comments", getCommentsByReviewId);
 app.post("/api/reviews/:review_id/comments", addComment);
 app.delete("/api/comments/:comment_id", removeComment);
+app.get("/api", getEndpoints);
 
 app.all("/*", (req, res) => {
   res.status(404).send({ message: "Path not found" });
