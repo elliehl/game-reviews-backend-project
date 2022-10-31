@@ -12,6 +12,9 @@ const {
   removeComment,
 } = require("./reviews/controller");
 const { getUsers } = require("./users/controller");
+const cors = require("cors");
+
+app.use(cors());
 
 app.get("/api/categories", getCategories);
 app.get("/api/reviews/:review_id", getReviewById);
